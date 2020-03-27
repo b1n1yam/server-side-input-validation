@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="style.css" />
+
+  <title>Programming Challenge</title>
+</head>
+
+<body>
+  <h2>Programming Challenge: Sign in/up Form with password validation</h2>
+  <div class="container" id="container">
+    <div class="form-container sign-up-container">
+      <form id="signup-form">
+        <h1>Create Account</h1>
+
+        <span>Please fill all required fields</span>
+        <input type="text" id="name" placeholder="Name" />
+        <small class="invalid-msg" id="name_error"> </small>
+        <input type="email" id="email" placeholder="Email" />
+        <small class="invalid-msg" id="email_error"> </small>
+        <input type="password" id="password" placeholder="Password" />
+        <small class="invalid-msg" id="password_error"> </small>
+        <button type="submit">Sign Up</button>
+      </form>
+    </div>
+    <div class="form-container sign-in-container">
+      <form id="signin-form">
+        <h1>Sign in</h1>
+
+        <span>Please fill all required fields</span>
+        <input type="email" id="_email" placeholder="Email" />
+        <small class="invalid-msg" id="_email_error"> </small>
+        <input type="password" id="_password" placeholder="Password" />
+        <small class="invalid-msg" id="_password_error"> </small>
+        <br />
+        <button type="submit">Sign In</button>
+      </form>
+    </div>
+    <div class="overlay-container">
+      <div class="overlay">
+        <div class="overlay-panel overlay-left">
+          <h1>Welcome Back!</h1>
+          <p>To keep connected with us please login with your personal info</p>
+          <button class="ghost" id="signIn">Sign In</button>
+        </div>
+        <div class="overlay-panel overlay-right">
+          <h1>Hello, Friend!</h1>
+          <p>Enter your personal details and start journey with us</p>
+          <button class="ghost" id="signUp">Sign Up</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>
+      Created with <i class="fa fa-heart"></i> by
+      <a target="_blank" href="https://github.com/exeligent">Biniyam Daniel</a>
+      - Technologies used
+      <a target="_blank" href="https://github.com/exeligent/server-side-input-validation">
+        NodeJs and Ejs
+      </a>.
+    </p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+  <script src="style.js"></script>
+
+
+  <script>
+
+
+    document.getElementById('signup-form').addEventListener('submit', submitForm);
+    function submitForm(e) {
+
+      e.preventDefault();
+      const name = document.querySelector('#name').value;
+      const email = document.querySelector('#email').value;
+      const password = document.querySelector('#password').value;
+
+
+      //setup loader
+      //setLoadingButton('step1_submit', 'Next');
+      fetch('/user/signup/', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json , text/plain, */*',
+          'Content-type': 'application/json'
+        },
+        body: JSON.stringify({ name, email, password })
+      }).then((res) => res.json())
+        .then((data) => {
+          //remove loader
+          // removeLoadingButton('step1_submit', 'Next')
+
+          console.log('data', data)
+          //init views
+          document.getElementById('name_error').innerHTML = ''
+          document.getElementById('name').className = 'form-control '
+
+          document.getElementById('email_error').innerHTML = ''
+          document.getElementById('email').className = 'form-control '
+
+          document.getElementById('password_error').innerHTML = ''
+          document.getElementById('password').className = 'form-control '
+
+
+
+
+          if (!data.success) {
+
+            if (data.name) {
+              document.getElementById('name_error').innerHTML = data.name
+              document.getElementById('name').className = 'form-control  is-invalid'
+            }
+
+            if (data.email) {
+              document.getElementById('email_error').innerHTML = data.email
+              document.getElementById('email').className = 'form-control is-invalid'
+            }
+            if (data.password) {
+              document.getElementById('password_error').innerHTML = data.password
+              document.getElementById('password').className = 'form-control is-invalid'
+            }
+
+          }
+
+          //if success
+          if (data.success) {
+            document.querySelector('#name').value = ''
+            document.querySelector('#email').value = ''
+            document.querySelector('#password').value = ''
+            Swal.fire({
+              title: 'Successfully registered',
+              text: 'Validation complete!',
+              icon: 'success'
+            }
+            )
+
+          }
+
+        })
+    }
+  </script>
+
+  <script>
+
+
+    document.getElementById('signin-form').addEventListener('submit', submitForm);
+    function submitForm(e) {
+
+      e.preventDefault();
+      const email = document.querySelector('#_email').value;
+      const password = document.querySelector('#_password').value;
+
+
+      //setup loader
+      //setLoadingButton('step1_submit', 'Next');
+      fetch('/user/signin/', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json , text/plain, */*',
+          'Content-type': 'application/json'
+        },
+        body: JSON.stringify({ name, email, password })
+      }).then((res) => res.json())
+        .then((data) => {
+          //remove loader
+          // removeLoadingButton('step1_submit', 'Next')
+
+          console.log('data', data)
+          //init views
+
+
+          document.getElementById('_email_error').innerHTML = ''
+          document.getElementById('_email').className = 'form-control '
+
+          document.getElementById('_password_error').innerHTML = ''
+          document.getElementById('_password').className = 'form-control '
+
+
+
+
+          if (!data.success) {
+
+
+
+            if (data.email) {
+              document.getElementById('_email_error').innerHTML = data.email
+              document.getElementById('_email').className = 'form-control is-invalid'
+            }
+            if (data.password) {
+              document.getElementById('_password_error').innerHTML = data.password
+              document.getElementById('_password').className = 'form-control is-invalid'
+            }
+
+          }
+
+          //if success
+          if (data.success) {
+            document.querySelector('#_email').value = ''
+            document.querySelector('#_password').value = ''
+            Swal.fire({
+              title: 'Successfully Logged In',
+              text: 'Validation complete!',
+              icon: 'success'
+            }
+            )
+
+          }
+
+        })
+    }
+  </script>
+
+</body>
+
+</html>
